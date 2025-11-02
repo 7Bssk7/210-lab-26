@@ -7,6 +7,7 @@
 #include <set>
 #include <list>
 #include <vector>
+#include <numeric>
 #include <chrono>
 using namespace std;
 using namespace std::chrono;
@@ -192,9 +193,10 @@ int main() {
     for (int i = 0; i < 4; i++) {
         cout << setw(W1) << labels[i];
         for (int j = 0; j < COLS; j++) {
-            cout << setw(W1) << results[i][j];
-            cout << endl;
+            int time = accumulate(results[i][j], results[i][j] + 15, 0)/15;
+            cout << setw(W1) << time;
         }
+        cout << endl;
     }
     
 
