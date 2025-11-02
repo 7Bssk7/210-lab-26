@@ -11,123 +11,161 @@
 using namespace std;
 using namespace std::chrono;
 
-// Testcode to insert
-const string test = "TESTCODE";
-const int w = 10;
+
+// const int SZ = 20000, COLS = 3, ROWS = 4, TESTS = 4;
+const int STRUCTURES = 3;
+const int ROWS = 4, COLS = 3;
+const int W1 = 10;
 
 int main() {
-    ifstream inputFile("codes.txt");
-    string code;
-    list<string> list;
-    set<string> set;
-    vector<string> vector;
+    int results[ROWS][COLS];
+    string cd;
+    vector<string> data_vector;
+    list<string> data_list;
+    set<string> data_set;
 
-    if(!inputFile){ //checks if file was open
-        cout << "Failed to open file" << endl;
-        return 1;
+    // testing for READ operations
+    for (int i = 0; i < STRUCTURES; i++) {
+        ifstream fin("codes.txt");
+        auto start = chrono::high_resolution_clock::now();
+        switch(i) {
+            case 0: {  // read into a vector
+                while (fin >> cd)
+                        data_vector.push_back(cd);
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[0][i] = duration.count();
+                break;
+            }
+            case 1: {  // read into a list
+                while (fin >> cd)
+                        data_list.push_back(cd);
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[0][i] = duration.count();
+                break;
+            }
+            case 2: {  // read into a set
+                while (fin >> cd)
+                        data_set.insert(cd);
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[0][i] = duration.count();
+                break;
+            }
+        }
+        fin.close();
     }
 
-    //VECTOR
-  
-    // Read operation for vector 
-    auto vector_startR = high_resolution_clock::now();
-    while(getline(inputFile, code)){
-        vector.push_back(code);
+    // testing for SORT operations
+    for (int i = 0; i < STRUCTURES; i++) {
+        auto start = chrono::high_resolution_clock::now();
+        switch(i) {
+            case 0: {  // sort a vector
+                sort(data_vector.begin(), data_vector.end());
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[1][i] = duration.count();
+                break;
+            }
+            case 1: {  // sort a list
+                data_list.sort();
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[1][i] = duration.count();
+                break;
+            }
+            case 2: {  // can't sort a set, so set to -1
+                results[1][i] = -1;
+                break;
+            }
+        }
     }
-    auto vector_endR = high_resolution_clock::now();
-    auto vector_durationR = duration_cast<microseconds>(vector_endR - vector_startR);
 
-    // Sort operation for vector
-    auto vector_startS = high_resolution_clock::now();
-    sort(vector.begin(), vector.end());
-    auto vector_endS = high_resolution_clock::now();
-    auto vector_durationS = duration_cast<microseconds>(vector_endS - vector_startS);
-
-    // Insert operation for vector
-    auto vector_startI = high_resolution_clock::now();
-    vector.insert(vector.begin() + (vector.size()/2),test);
-    auto vector_endI = high_resolution_clock::now();
-    auto vector_durationI = duration_cast<microseconds>(vector_endI - vector_startI);
-
-    // Delete operation for vector 
-    auto vector_startD = high_resolution_clock::now();
-    vector.erase(vector.begin() + ((vector.size()/2)-1));
-    auto vector_endD = high_resolution_clock::now();
-    auto vector_durationD = duration_cast<microseconds>(vector_endD - vector_startD);
-
-    // This code moves the pointer inside inputFile back to the beginning of the file so we can read it again.
-    inputFile.clear();
-    inputFile.seekg(0, ios::beg);
-
-    // LIST
-
-    // Read operation for list
-    auto list_startR = high_resolution_clock::now();
-    while(getline(inputFile,code)){
-        list.push_back(code);
+    // testing for INSERT operations
+    for (int i = 0; i < STRUCTURES; i++) {
+        int ind_v = data_vector.size() / 2;
+        int ind_l = data_list.size() / 2;
+        auto start = chrono::high_resolution_clock::now();
+        switch(i) {
+            case 0: {  // insert into a vector
+                data_vector.insert(data_vector.begin() + ind_v, "TESTCODE");
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[2][i] = duration.count();
+                break;
+            }
+            case 1: {  // insert into a list
+                auto it = data_list.begin();
+                advance(it, ind_l);
+                data_list.insert(it, "TESTCODE");
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[2][i] = duration.count();
+                break;
+            }
+            case 2: {  // insert into a set
+                data_set.insert("TESTCODE");
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[2][i] = duration.count();
+                break;
+            }
+        }
     }
-    auto list_endR = high_resolution_clock::now();
-    auto list_durationR = duration_cast<microseconds>(list_endR - list_startR);
 
-    // Sort operation for list
-    auto list_startS = high_resolution_clock::now();
-    list.sort();
-    auto list_endS = high_resolution_clock::now();
-    auto list_durationS = duration_cast<microseconds>(list_endS - list_startS);
+    // testing for DELETE operations
+    for (int i = 0; i < STRUCTURES; i++) {
+        // select a target value in the vector 
+        int ind = data_vector.size() / 2;
+        string target_v = data_vector[ind];
 
-    // Insert operation for list
-    auto list_startI = high_resolution_clock::now();
-    auto it = list.begin();
-    advance(it, (list.size()/2));
-    list.insert(it, test);
-    auto list_endI = high_resolution_clock::now();
-    auto list_durationI = duration_cast<microseconds>(list_endI - list_startI);
+        // select a target value in the list
+        auto it1 = data_list.begin();
+        advance(it1, ind);
+        string target_l = *it1;
 
-    // Delete operation for list
-    auto list_startD = high_resolution_clock::now();
-    it = list.begin();
-    advance(it, (list.size()/2)-1);
-    list.erase(it);
-    auto list_endD = high_resolution_clock::now();
-    auto list_durationD = duration_cast<microseconds>(list_endD - list_startD);
-
-    // This code moves the pointer inside inputFile back to the beginning of the file so we can read it again.
-    inputFile.clear();
-    inputFile.seekg(0, ios::beg);
-
-    // SET 
-
-    // Read operation for set
-    auto set_startR = high_resolution_clock::now();
-    while(getline(inputFile, code)){
-        set.insert(code);
+        // select a target value in the set
+        auto it2 = data_set.begin();
+        advance(it2, ind);
+        string target_s = *it2;
+        
+        auto start = chrono::high_resolution_clock::now();
+        switch(i) {
+            case 0: {  // delete by value from vector
+                data_vector.erase(remove(data_vector.begin(), data_vector.end(), target_v));
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[3][i] = duration.count();
+                break;
+            }
+            case 1: {  // delete by value from list
+                data_list.remove(target_l);
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[3][i] = duration.count();
+                break;
+            }
+            case 2: {  // delete by value from set
+                data_set.erase(target_s);    
+                auto end = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                results[3][i] = duration.count();
+                break;
+            }
+        }
     }
-    auto set_endR = high_resolution_clock::now();
-    auto set_durationR = duration_cast<microseconds>(set_endR - set_startR);
 
-    // Set automatically sorts
-
-    // Insert operation for set
-    auto set_startI = high_resolution_clock::now();
-    set.insert(test);
-    auto set_endI = high_resolution_clock::now();
-    auto set_durationI = duration_cast<microseconds>(set_endI - set_startI);
-
-    // Delete operation for set
-    auto set_startD = high_resolution_clock::now();
-    auto i = set.begin();
-    advance(i, (set.size()/2)-1);
-    set.erase(i);
-    auto set_endD = high_resolution_clock::now();
-    auto set_durationD = duration_cast<microseconds>(set_endD - set_startD);
-
-    // Output of the race
-    cout << right << setw(30) << "*** OUTPUT TABLE ***"<< endl;
-    cout << right << setw(w) << "Operation" << setw(w) << "Vector" << setw(w) << "List" << setw(w) << "Set" << endl;
-    cout << right << setw(w) << "Read" << setw(w) << vector_durationR.count() << setw(w) << list_durationR.count() << setw(w) << set_durationR.count() << endl;
-    cout << right << setw(w) << "Sort" << setw(w) << vector_durationS.count() << setw(w) << list_durationS.count() << setw(w) << "-1" << endl;
-    cout << right << setw(w) << "Insert" << setw(w) << vector_durationI.count() << setw(w) << list_durationI.count() << setw(w) << set_durationI.count() << endl;
-    cout << right << setw(w) << "Delete" << setw(w) << vector_durationD.count() << setw(w) << list_durationD.count() << setw(w) << set_durationD.count() << endl;
+    string labels[] = {"Read", "Sort", "Insert", "Delete"};
+    cout << setw(W1) << "Operation" << setw(W1) << "Vector" << setw(W1) << "List"
+         << setw(W1) << "Set" << endl;
+    for (int i = 0; i < 4; i++) {
+        cout << setw(W1) << labels[i];
+        for (int j = 0; j < COLS; j++) 
+            cout << setw(W1) << results[i][j];
+        cout << endl;
+    }
+    
 
     return 0;
 }
