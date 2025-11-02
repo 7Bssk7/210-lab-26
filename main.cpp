@@ -13,13 +13,15 @@ using namespace std;
 using namespace std::chrono;
 
 
-// const int SZ = 20000, COLS = 3, ROWS = 4, TESTS = 4;
+// Constants for dimensions and formatting
 const int STRUCTURES = 3;
 const int ROWS = 4, COLS = 3, SUM = 15;
 const int W1 = 10;
 
 int main() {
+    // 3D array to store timing results: [operation][structure][simulation]
     long long results[ROWS][COLS][SUM];
+    // Containers for testing
     string cd;
     vector<string> data_vector;
     list<string> data_list;
@@ -31,7 +33,7 @@ int main() {
         switch(i) {
             case 0: {  // read into a vector
                 for(int j = 0; j < SUM; j++){
-                    data_vector.clear();
+                    data_vector.clear();// Reset container
                     auto start = chrono::high_resolution_clock::now();
                     while (fin >> cd){
                         data_vector.push_back(cd);
@@ -39,6 +41,7 @@ int main() {
                     auto end = chrono::high_resolution_clock::now();
                     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
                     results[0][i][j] = duration.count();
+                    // This code moves the pointer inside inputFile back to the beginning of the file so we can read it again.
                     fin.clear();
                     fin.seekg(0, ios::beg);
                 }
@@ -47,7 +50,7 @@ int main() {
             }
             case 1: {  // read into a list
                 for(int j = 0; j < SUM; j++){
-                    data_list.clear();
+                    data_list.clear();// Reset container
                     auto start = chrono::high_resolution_clock::now();
                     while (fin >> cd){
                         data_list.push_back(cd);
@@ -55,6 +58,7 @@ int main() {
                     auto end = chrono::high_resolution_clock::now();
                     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
                     results[0][i][j] = duration.count();
+                    // This code moves the pointer inside inputFile back to the beginning of the file so we can read it again.
                     fin.clear();
                     fin.seekg(0, ios::beg);
                 }
@@ -62,7 +66,7 @@ int main() {
             }
             case 2: {  // read into a set
                 for(int j = 0; j < SUM; j++){
-                    data_set.clear();
+                    data_set.clear();// Reset container
                     auto start = chrono::high_resolution_clock::now();
                     while (fin >> cd){
                         data_set.insert(cd);
@@ -70,13 +74,15 @@ int main() {
                     auto end = chrono::high_resolution_clock::now();
                     auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
                     results[0][i][j] = duration.count();
+                    // This code moves the pointer inside inputFile back to the beginning of the file so we can read it again.
                     fin.clear();
                     fin.seekg(0, ios::beg);
                 }
                 break;
             }
         }
-        fin.close();
+        // Close file after structure is done
+        fin.close(); 
     }
 
     // testing for SORT operations
@@ -102,7 +108,7 @@ int main() {
                 }
                 break;
             }
-            case 2: {  // can't sort a set, so set to -1
+            case 2: {  // Set cannot be sorted; fill with 0
                 fill(results[1][i], results[1][i] + 15, 0);
                 break;
             }
@@ -151,7 +157,7 @@ int main() {
 
     // testing for DELETE operations
     for (int i = 0; i < STRUCTURES; i++) {
-        // select a target value in the vector 
+        // Select target values from midpoint of each container
         int ind = data_vector.size() / 2;
         string target_v = data_vector[ind];
 
@@ -205,6 +211,7 @@ int main() {
     for (int i = 0; i < 4; i++) {
         cout << setw(W1) << labels[i];
         for (int j = 0; j < COLS; j++) {
+            // Compute average time over 15 simulations
             int time = accumulate(results[i][j], results[i][j] + 15, 0)/15;
             cout << setw(W1) << time;
         }
