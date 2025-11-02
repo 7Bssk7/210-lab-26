@@ -1,4 +1,4 @@
-// COMSC-210 | Lab 25 | Arkhip Finski
+// COMSC-210 | Lab 26 | Arkhip Finski
 // IDE used: Visual Studio
 #include <iostream>
 #include <iomanip>
@@ -31,35 +31,47 @@ int main() {
         switch(i) {
             case 0: {  // read into a vector
                 for(int j = 0; j < SUM; j++){
+                    data_vector.clear();
                     auto start = chrono::high_resolution_clock::now();
-                    while (fin >> cd)
+                    while (fin >> cd){
                         data_vector.push_back(cd);
-                        auto end = chrono::high_resolution_clock::now();
-                        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-                        results[0][i][j] = duration.count();
+                    }    
+                    auto end = chrono::high_resolution_clock::now();
+                    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                    results[0][i][j] = duration.count();
+                    fin.clear();
+                    fin.seekg(0, ios::beg);
                 }
                 
                 break;
             }
             case 1: {  // read into a list
                 for(int j = 0; j < SUM; j++){
+                    data_list.clear();
                     auto start = chrono::high_resolution_clock::now();
-                    while (fin >> cd)
+                    while (fin >> cd){
                         data_list.push_back(cd);
-                        auto end = chrono::high_resolution_clock::now();
-                        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-                        results[0][i][j] = duration.count();
+                    } 
+                    auto end = chrono::high_resolution_clock::now();
+                    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                    results[0][i][j] = duration.count();
+                    fin.clear();
+                    fin.seekg(0, ios::beg);
                 }
                 break;
             }
             case 2: {  // read into a set
                 for(int j = 0; j < SUM; j++){
+                    data_set.clear();
                     auto start = chrono::high_resolution_clock::now();
-                    while (fin >> cd)
+                    while (fin >> cd){
                         data_set.insert(cd);
-                        auto end = chrono::high_resolution_clock::now();
-                        auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
-                        results[0][i][j] = duration.count();
+                    }    
+                    auto end = chrono::high_resolution_clock::now();
+                    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+                    results[0][i][j] = duration.count();
+                    fin.clear();
+                    fin.seekg(0, ios::beg);
                 }
                 break;
             }
@@ -91,7 +103,7 @@ int main() {
                 break;
             }
             case 2: {  // can't sort a set, so set to -1
-                fill(results[1][i], results[1][i] + 15, -1);
+                fill(results[1][i], results[1][i] + 15, 0);
                 break;
             }
         }
